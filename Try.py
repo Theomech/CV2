@@ -36,6 +36,13 @@ for landmark in os.listdir(dirMirrored):
 landmarksMirrored = np.asarray(landmarksMirrored)
 landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2))
 
+
+##normalize
+landmarksOriginal = landmarksOriginal.astype(float) / linalg.norm(landmarksOriginal).astype(float)
+landmarksMirrored = landmarksMirrored.astype(float) / linalg.norm(landmarksMirrored).astype(float)
+
+
+##Des edw ti ginetai...
 for j in range(8):
     for i in landmarksOriginal[0,j,:,:]:
         plt.scatter(i[0], i[1])
