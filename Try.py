@@ -47,3 +47,5 @@ for j in range(8):
     for i in landmarksOriginal[0,j,:,:]:
         plt.scatter(i[0], i[1])
 plt.show()
+
+
