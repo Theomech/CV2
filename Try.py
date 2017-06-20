@@ -145,7 +145,7 @@ def procloop(firstElem1, firstElem2, firstElem3, firstElem4, ProcArray):
     return ProcMean, ProcOriginal
 
 def normalize(X):
-    X = X.astype(float) / linalg.norm(X)/.astype(float)
+    X = X.astype(float) / linalg.norm(X).astype(float)
     return X
 
 ##Defining PCA
@@ -189,6 +189,9 @@ def normalize(X):
 
 
 ###Specifing directories
+
+
+
 dirAll = sys.path[0]+'/_Data/Landmarks'
 dirOriginal = sys.path[0]+r"/_Data/Landmarks/original"
 dirMirrored = sys.path[0]+r"/_Data/Landmarks/mirrored"
@@ -225,7 +228,7 @@ firstElem4 = landmarksOriginal[0,5,:,:]
 
 
 [ProcMean, ProcOriginal ]= procloop(firstElem1, firstElem2, firstElem3, firstElem4, landmarksOriginal)
-[ProcMean, ProcOriginal ]= procloop(ProcMean[0,:], ProcMean[1,:], ProcMean[2,:], ProcMean[3,:], landmarksOriginal)\
+[ProcMean, ProcOriginal ]= procloop(ProcMean[0,:,:], ProcMean[1,:,:], ProcMean[2,:,:], ProcMean[3,:,:], landmarksOriginal)
 
 
 
