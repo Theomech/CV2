@@ -7,40 +7,6 @@ import numpy.linalg as linalg
 import matplotlib.pyplot as plt
 
 
-###Specifing directories
-dirAll = sys.path[0]+'/_Data/Landmarks'
-dirOriginal = sys.path[0]+r"/_Data/Landmarks/original"
-dirMirrored = sys.path[0]+r"/_Data/Landmarks/mirrored"
-
-###Declaring the 2 arrays that will have the coordinates
-landmarksOriginal = []
-landmarksMirrored = []
-
-###Importing data
-for landmark in os.listdir(dirOriginal):
-    textFile = open(os.path.join(dirOriginal, landmark), 'r')
-    coordinates = np.reshape(textFile.read().splitlines(), (40, 2))
-    landmarksOriginal.append(coordinates)
-
-###Transforming the initial list for Original elements to array and then reshaping
-landmarksOriginal = np.asarray(landmarksOriginal)
-landmarksOriginal = np.reshape(landmarksOriginal,(14,8,40,2)).astype(float)
-
-for landmark in os.listdir(dirMirrored):
-    textFile = open(os.path.join(dirMirrored, landmark), 'r')
-    coordinates = np.reshape(textFile.read().splitlines(), (40, 2))
-    landmarksMirrored.append(coordinates)
-
-
-###Transforming the initial list for Mirrored elements to array and then reshaping
-landmarksMirrored = np.asarray(landmarksMirrored)
-landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2)).astype(float)
-
-
-###normalize
-#landmarksOriginal = (landmarksOriginal.astype(float) / linalg.norm(landmarksOriginal).astype(float))
-#landmarksMirrored = (landmarksMirrored.astype(float) / linalg.norm(landmarksMirrored).astype(float))
-
 
 def procrustes(X, Y, scaling=True, reflection='best'):
     """
@@ -153,32 +119,34 @@ def procrustes(X, Y, scaling=True, reflection='best'):
 
     return d, Z, tform
 
-firstElem1 = landmarksOriginal[0,0,:,:]
-firstElem2 = landmarksOriginal[0,4,:,:]
-firstElem3 = landmarksOriginal[0,1,:,:]
-firstElem4 = landmarksOriginal[0,5,:,:]
 
-ProcOriginal = np.zeros((14,4,40,2))
+def procloop(firstElem1, firstElem2, firstElem3, firstElem4, ProcArray):
+    ProcOriginal = np.zeros((14,4,40,2))
 
-for j in range(14):
-    for i in range(0,3,3):
-        Y = landmarksOriginal[j,i,:,:]
-        [d,Z,tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
-        ProcOriginal[j,0,:,:] = Z
-        Y = landmarksOriginal[j,i+4,:,:]
-        [d, Z, tform] = procrustes(firstElem3, Y, scaling=True, reflection='best')
-        ProcOriginal[j, 1, :, :] = Z
+    for j in range(14):
+        for i in range(0,3,3):
+            Y = ProcArray[j,i,:,:]
+            [d,Z,tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
+            ProcOriginal[j,0,:,:] = Z
+            Y = ProcArray[j,i+4,:,:]
+            [d, Z, tform] = procrustes(firstElem3, Y, scaling=True, reflection='best')
+            ProcOriginal[j, 1, :, :] = Z
 
-    for i in range(1,2):
-        Y = landmarksOriginal[j,i,:,:]
-        [d, Z, tform] = procrustes(firstElem2, Y, scaling=True, reflection='best')
-        ProcOriginal[j, 2, :, :] = Z
-        Y = landmarksOriginal[j, i + 4, :, :]
-        [d, Z, tform] = procrustes(firstElem4, Y, scaling=True, reflection='best')
-        ProcOriginal[j, 3, :, :] = Z
+        for i in range(1,2):
+            Y = ProcArray[j,i,:,:]
+            [d, Z, tform] = procrustes(firstElem2, Y, scaling=True, reflection='best')
+            ProcOriginal[j, 2, :, :] = Z
+            Y = ProcArray[j, i + 4, :, :]
+            [d, Z, tform] = procrustes(firstElem4, Y, scaling=True, reflection='best')
+            ProcOriginal[j, 3, :, :] = Z
 
-ProcMean = np.mean(ProcOriginal, axis=0,)
+    ProcMean = np.mean(ProcOriginal, axis=0,)
 
+    return ProcMean, ProcOriginal
+
+def normalize(X):
+    X = X.astype(float) / linalg.norm(X)/.astype(float)
+    return X
 
 ##Defining PCA
 #def pca(X, nb_components=0):
@@ -213,6 +181,54 @@ ProcMean = np.mean(ProcOriginal, axis=0,)
 
 
 ##Des edw ti ginetai...
+
+
+###normalize
+#landmarksOriginal = normalize(landmarksOriginal)
+#landmarksMirrored = normalize(landmarksMirrored)
+
+
+###Specifing directories
+dirAll = sys.path[0]+'/_Data/Landmarks'
+dirOriginal = sys.path[0]+r"/_Data/Landmarks/original"
+dirMirrored = sys.path[0]+r"/_Data/Landmarks/mirrored"
+
+###Declaring the 2 arrays that will have the coordinates
+landmarksOriginal = []
+landmarksMirrored = []
+
+###Importing data
+for landmark in os.listdir(dirOriginal):
+    textFile = open(os.path.join(dirOriginal, landmark), 'r')
+    coordinates = np.reshape(textFile.read().splitlines(), (40, 2))
+    landmarksOriginal.append(coordinates)
+
+###Transforming the initial list for Original elements to array and then reshaping
+landmarksOriginal = np.asarray(landmarksOriginal)
+landmarksOriginal = np.reshape(landmarksOriginal,(14,8,40,2)).astype(float)
+
+for landmark in os.listdir(dirMirrored):
+    textFile = open(os.path.join(dirMirrored, landmark), 'r')
+    coordinates = np.reshape(textFile.read().splitlines(), (40, 2))
+    landmarksMirrored.append(coordinates)
+
+
+###Transforming the initial list for Mirrored elements to array and then reshaping
+landmarksMirrored = np.asarray(landmarksMirrored)
+landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2)).astype(float)
+
+
+firstElem1 = landmarksOriginal[0,0,:,:]
+firstElem2 = landmarksOriginal[0,4,:,:]
+firstElem3 = landmarksOriginal[0,1,:,:]
+firstElem4 = landmarksOriginal[0,5,:,:]
+
+
+[ProcMean, ProcOriginal ]= procloop(firstElem1, firstElem2, firstElem3, firstElem4, landmarksOriginal)
+[ProcMean, ProcOriginal ]= procloop(ProcMean[0,:], ProcMean[1,:], ProcMean[2,:], ProcMean[3,:], landmarksOriginal)\
+
+
+
 for j in range(4):
     for i in ProcMean[j,:,:]:
         plt.scatter(i[0], i[1])
