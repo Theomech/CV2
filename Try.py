@@ -124,16 +124,16 @@ def procloop(firstElem1, firstElem2, firstElem3, firstElem4, ProcArray):
     ProcOriginal = np.zeros((14,4,40,2))
 
     for j in range(14):
-        for i in range(0,3,3):
-            Y = ProcArray[j,i,:,:]
+        for i in range(0,4,3):
+            Y = ProcArray[j, i, :, :]
             [d,Z,tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
-            ProcOriginal[j,0,:,:] = Z
-            Y = ProcArray[j,i+4,:,:]
+            ProcOriginal[j, 0, :, :] = Z
+            Y = ProcArray[j, i + 4, :, :]
             [d, Z, tform] = procrustes(firstElem3, Y, scaling=True, reflection='best')
             ProcOriginal[j, 1, :, :] = Z
 
-        for i in range(1,2):
-            Y = ProcArray[j,i,:,:]
+        for i in range(1,3):
+            Y = ProcArray[j, i, :, :]
             [d, Z, tform] = procrustes(firstElem2, Y, scaling=True, reflection='best')
             ProcOriginal[j, 2, :, :] = Z
             Y = ProcArray[j, i + 4, :, :]
@@ -220,16 +220,21 @@ for landmark in os.listdir(dirMirrored):
 landmarksMirrored = np.asarray(landmarksMirrored)
 landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2)).astype(float)
 
-
+###4 Classes of teeth
+###1st Class = upper lateral incisors
 firstElem1 = landmarksOriginal[0,0,:,:]
-firstElem2 = landmarksOriginal[0,4,:,:]
-firstElem3 = landmarksOriginal[0,1,:,:]
+###2nd Class = upper central incisors
+firstElem2 = landmarksOriginal[0,1,:,:]
+###3rd Class = lower lateral incisors
+firstElem3 = landmarksOriginal[0,4,:,:]
+###4th Class = lower central incisors
 firstElem4 = landmarksOriginal[0,5,:,:]
 
-
+#First go of Procrustes
 [ProcMean, ProcOriginal ]= procloop(firstElem1, firstElem2, firstElem3, firstElem4, landmarksOriginal)
-[ProcMean, ProcOriginal ]= procloop(ProcMean[0,:,:], ProcMean[1,:,:], ProcMean[2,:,:], ProcMean[3,:,:], landmarksOriginal)
 
+for i in range(30):
+    [ProcMean, ProcOriginal ]= procloop(ProcMean[0,:,:], ProcMean[1,:,:], ProcMean[2,:,:], ProcMean[3,:,:], landmarksOriginal)
 
 
 for j in range(4):
