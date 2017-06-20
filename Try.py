@@ -196,13 +196,12 @@ for landmark in os.listdir(dirMirrored):
 ###Transforming the initial list for Mirrored elements to array and then reshaping
 landmarksMirrored = np.asarray(landmarksMirrored)
 landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2)).astype(float)
-###Computing the average image of each tooth
-landmarksOriginalmean = np.mean(landmarksOriginal, axis=0)
+
+textFile.close()
 
 
 
-
-firstElem1 = landmarksOriginalmean[0,:,:]
+firstElem1 = landmarksOriginal[0,0,:,:]
 
 ###Applying Procrustes
 ###First go of Procrustes
@@ -211,13 +210,13 @@ firstElem1 = landmarksOriginalmean[0,:,:]
 
 firstElem1 = normalize(np.mean(ProcMean, axis=0))
 ###Looping Procrustes in order to converge more
-for i in range(10):
+for i in range(30):
     [ProcMean, ProcOriginal] = procloop(firstElem1, ProcOriginal)
     firstElem1 = normalize(np.mean(ProcMean, axis=0))
 
 
 for j in range(2,3):
-    for i in ProcOriginal[j,5,:,:]:
+    for i in ProcOriginal[j,1,:,:]:
         plt.scatter(i[0], i[1])
 #for j in range(2):
 #    for i in ProcMean[j, :, :]:
@@ -229,13 +228,13 @@ plt.show()
 
 
 ###Applying PCA
-for i in range(4):
-    [eigenvalues, eigenvectors, mu] = pca(MeanTeeth[i,:,:],nb_components=10)
+#for i in range(4):
+#    [eigenvalues, eigenvectors, mu] = pca(MeanTeeth[i,:,:],nb_components=10)
 
-eigenvectors = eigenvectors.T
-for i in eigenvectors:
-    plt.scatter(i[0],i[1])
-plt.show()
+#eigenvectors = eigenvectors.T
+#for i in eigenvectors:
+#    plt.scatter(i[0],i[1])
+#plt.show()
 
 for j in range(2):
     for i in MeanTeeth[j,:,:]:
