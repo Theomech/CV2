@@ -120,25 +120,15 @@ def procrustes(X, Y, scaling=True, reflection='best'):
     return d, Z, tform
 
 
-def procloop(firstElem1, firstElem2, firstElem3, firstElem4, ProcArray):
-    ProcOriginal = np.zeros((14,4,40,2))
+def procloop(firstElem1, ProcArray):
+    ProcOriginal = np.zeros((14,8,40,2))
 
     for j in range(14):
-        for i in range(0,4,3):
+        for i in range(8):
             Y = ProcArray[j, i, :, :]
-            [d,Z,tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
-            ProcOriginal[j, 0, :, :] = Z
-            Y = ProcArray[j, i + 4, :, :]
-            [d, Z, tform] = procrustes(firstElem3, Y, scaling=True, reflection='best')
-            ProcOriginal[j, 1, :, :] = Z
+            [d, Z, tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
+            ProcOriginal[j, i, :, :] = Z
 
-        for i in range(1,3):
-            Y = ProcArray[j, i, :, :]
-            [d, Z, tform] = procrustes(firstElem2, Y, scaling=True, reflection='best')
-            ProcOriginal[j, 2, :, :] = Z
-            Y = ProcArray[j, i + 4, :, :]
-            [d, Z, tform] = procrustes(firstElem4, Y, scaling=True, reflection='best')
-            ProcOriginal[j, 3, :, :] = Z
 
     ProcMean = np.mean(ProcOriginal, axis=0,)
 
@@ -148,63 +138,50 @@ def normalize(X):
     X = X.astype(float) / linalg.norm(X).astype(float)
     return X
 
-##Defining PCA
-#def pca(X, nb_components=0):
-#    [n,d,mmm,mm] = X.shape
-#    if (nb_components <= 0) or (nb_components>6):
-#        nb_components = n
-#    mu = X.mean(axis=0)
-#    for i in range(n):
-#        X[i,:] -= mu
-#
-#    Covar = (np.dot(X, X.T) / float(n)) #some use n-1
-#
-#    eigenvalues, eigenvectors = np.linalg.eigh(Covar)
-#
-#
-#    indx = np.argsort(eigenvalues)[::-1]
-#    eigenvalues = eigenvalues[indx]
-#    eigenvectors = eigenvectors[:,indx][:,0:nb_components]
-#
-#    eigenvectors = np.dot(X.T, eigenvectors)
-#
-#    for i in range(nb_components):
-#        eigenvectors[:,i] = eigenvectors[:,i] / np.linalg.norm(eigenvectors[:,i])
-#
-#    return (eigenvalues, eigenvectors, mu)
 
-##Performing PCA
+def pca(X, nb_components=0):
+    [n,d] = X.shape
+    if (nb_components <= 0) or (nb_components>20):
+        nb_components = n
+    mu = X.mean(axis=0)
+    for i in range(n):
+        X[i,:] -= mu
 
-#[eigenvaluesOriginal, eigenvectorsOriginal, muOriginal] = pca(landmarksOriginal,nb_components=0)
-#[eigenvaluesMirrored, eigenvectorsMirrored, muMirrored] = pca(landmarksMirrored,nb_components=0)
+    Covar = (np.dot(X, X.T) / float(n)) #some use n-1
+
+    eigenvalues, eigenvectors = np.linalg.eigh(Covar)
 
 
+    indx = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[indx]
+    eigenvectors = eigenvectors[:,indx][:,0:nb_components]
 
-##Des edw ti ginetai...
+    eigenvectors = np.dot(X.T, eigenvectors)
 
+    for i in range(nb_components):
+        eigenvectors[:,i] = eigenvectors[:,i] / np.linalg.norm(eigenvectors[:,i])
 
-###normalize
-#landmarksOriginal = normalize(landmarksOriginal)
-#landmarksMirrored = normalize(landmarksMirrored)
+    return (eigenvalues, eigenvectors, mu)
+
 
 
 ###Specifing directories
-
-
-
 dirAll = sys.path[0]+'/_Data/Landmarks'
 dirOriginal = sys.path[0]+r"/_Data/Landmarks/original"
 dirMirrored = sys.path[0]+r"/_Data/Landmarks/mirrored"
 
+
 ###Declaring the 2 arrays that will have the coordinates
 landmarksOriginal = []
 landmarksMirrored = []
+
 
 ###Importing data
 for landmark in os.listdir(dirOriginal):
     textFile = open(os.path.join(dirOriginal, landmark), 'r')
     coordinates = np.reshape(textFile.read().splitlines(), (40, 2))
     landmarksOriginal.append(coordinates)
+
 
 ###Transforming the initial list for Original elements to array and then reshaping
 landmarksOriginal = np.asarray(landmarksOriginal)
@@ -219,32 +196,60 @@ for landmark in os.listdir(dirMirrored):
 ###Transforming the initial list for Mirrored elements to array and then reshaping
 landmarksMirrored = np.asarray(landmarksMirrored)
 landmarksMirrored = np.reshape(landmarksMirrored,(14,8,40,2)).astype(float)
-
-###4 Classes of teeth
-###1st Class = upper lateral incisors
-firstElem1 = landmarksOriginal[0,0,:,:]
-###2nd Class = upper central incisors
-firstElem2 = landmarksOriginal[0,1,:,:]
-###3rd Class = lower lateral incisors
-firstElem3 = landmarksOriginal[0,4,:,:]
-###4th Class = lower central incisors
-firstElem4 = landmarksOriginal[0,5,:,:]
-
-#First go of Procrustes
-[ProcMean, ProcOriginal ]= procloop(firstElem1, firstElem2, firstElem3, firstElem4, landmarksOriginal)
-
-for i in range(30):
-    [ProcMean, ProcOriginal ]= procloop(ProcMean[0,:,:], ProcMean[1,:,:], ProcMean[2,:,:], ProcMean[3,:,:], landmarksOriginal)
+###Computing the average image of each tooth
+landmarksOriginalmean = np.mean(landmarksOriginal, axis=0)
 
 
-for j in range(4):
-    for i in ProcMean[j,:,:]:
+
+
+firstElem1 = landmarksOriginalmean[0,:,:]
+
+###Applying Procrustes
+###First go of Procrustes
+[ProcMean, ProcOriginal] = procloop(firstElem1, landmarksOriginal)
+
+
+firstElem1 = normalize(np.mean(ProcMean, axis=0))
+###Looping Procrustes in order to converge more
+for i in range(10):
+    [ProcMean, ProcOriginal] = procloop(firstElem1, ProcOriginal)
+    firstElem1 = normalize(np.mean(ProcMean, axis=0))
+
+
+for j in range(2,3):
+    for i in ProcOriginal[j,5,:,:]:
+        plt.scatter(i[0], i[1])
+#for j in range(2):
+#    for i in ProcMean[j, :, :]:
+#        plt.scatter(i[0], i[1])
+#    for i in firstElem1:
+#        plt.scatter(i[0], i[1])
+plt.show()
+
+
+
+###Applying PCA
+for i in range(4):
+    [eigenvalues, eigenvectors, mu] = pca(MeanTeeth[i,:,:],nb_components=10)
+
+eigenvectors = eigenvectors.T
+for i in eigenvectors:
+    plt.scatter(i[0],i[1])
+plt.show()
+
+for j in range(2):
+    for i in MeanTeeth[j,:,:]:
         plt.scatter(i[0], i[1])
 plt.show()
 
-for j in range(1,2):
-    for i in ProcOriginal[0,j,:,:]:
-        plt.scatter(i[0], i[1])
-plt.show()
+#for j in range(8):
+#    for i in ProcMean[j,:,:]:
+#        plt.scatter(i[0], i[1])
+#plt.show()
+#
+#for j in range(1,2):
+#    for i in ProcOriginal[0,j,:,:]:
+#        plt.scatter(i[0], i[1])
+#plt.show()
 
 
