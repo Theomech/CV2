@@ -214,10 +214,15 @@ for i in range(30):
     [ProcMean, ProcOriginal] = procloop(firstElem1, ProcOriginal)
     firstElem1 = normalize(np.mean(ProcMean, axis=0))
 
-
-for j in range(2,3):
-    for i in ProcOriginal[j,1,:,:]:
+plt.figure(1)
+k=331
+for j in range(9):
+    for i in ProcOriginal[j,2,:,:]:
+        plt.subplot(k)
         plt.scatter(i[0], i[1])
+    k = k + 1
+
+
 #for j in range(2):
 #    for i in ProcMean[j, :, :]:
 #        plt.scatter(i[0], i[1])
@@ -236,10 +241,10 @@ plt.show()
 #    plt.scatter(i[0],i[1])
 #plt.show()
 
-for j in range(2):
-    for i in MeanTeeth[j,:,:]:
-        plt.scatter(i[0], i[1])
-plt.show()
+#ange(2):
+#in MeanTeeth[j,:,:]:
+#t.scatter(i[0], i[1])
+#
 
 #for j in range(8):
 #    for i in ProcMean[j,:,:]:
