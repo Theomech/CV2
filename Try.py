@@ -221,16 +221,22 @@ for j in range(9):
         plt.subplot(k)
         plt.scatter(i[0], i[1])
     k = k + 1
-
-
+plt.show()
 #for j in range(2):
 #    for i in ProcMean[j, :, :]:
 #        plt.scatter(i[0], i[1])
 #    for i in firstElem1:
 #        plt.scatter(i[0], i[1])
+
+
+k=331
+
+for j in range(8):
+    for i in ProcMean[j,:,:]:
+        plt.subplot(k)
+        plt.scatter(i[0],i[1])
+    k=k+1
 plt.show()
-
-
 
 ###Applying PCA
 #for i in range(4):
