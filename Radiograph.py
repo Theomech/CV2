@@ -9,19 +9,22 @@ dirAllRadio = sys.path[0] + '/_Data/Radiographs'
 def load(folder):
     images = []
     for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder, filename))
+        img = cv2.imread(os.path.join(folder, filename), 0)
         if img is not None:
             images.append(img)
     return images
 
 
-def pseudobinarize(image):
-    height, width, depth = image.shape
+def resizeRadio(image):
+    return cv2.resize(image, (1920, 1080))
+
+
+def pseudoBinarize(image):
+    height, width = image.shape
     for i in range(0, height):
         for j in range(0, width):
-            for k in range(0, depth):
-                if image[i, j, k] / 256.0 < 0.1:
-                    image[i, j, k] = 0
+            if image[i, j] / 256.0 < 0.5:
+                image[i, j] = 0
     return image
 
 
@@ -32,17 +35,29 @@ def print_image(image, name):
     cv2.destroyAllWindows()
 
 
+def sobel(image):
+    sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+    return cv2.addWeighted(cv2.convertScaleAbs(sobelx), 0.5, cv2.convertScaleAbs(sobely), 0.5, 0)
+
+
 def preprocess(image):
-    # pseudobinarize
-    img = pseudobinarize(image)
     # blur
-    cv2.medianBlur(img, 5, 0)
-    # Discard values lower with grey scale intensity lower than 0.5
+    image = cv2.bilateralFilter(image, 9, 75, 75)
 
-    return img
+    image = cv2.equalizeHist(image)
+
+    image = sobel(image)
+
+    return image
 
 
-image = preprocess(load(dirAllRadio).__getitem__(0))
+image = load(dirAllRadio).__getitem__(0)
+print(image.shape)
 print_image(image, 'Original radiograph')
-print_image(preprocess(image), 'Preprocessed radiograph')
-print_image(image, '')
+image = resizeRadio(image)
+print(image.shape)
+print_image(image, "Resized")
+image = preprocess(image)
+print(image.shape)
+print_image(image, 'Preprocessed radiograph')
