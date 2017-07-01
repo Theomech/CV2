@@ -190,9 +190,9 @@ plt.figure(1)
 PCAres = ToothPCA(ProcOriginal,ProcOriginalMir)
 
 k=331
-for j in range(8):
+for j in range(1):
    for i in PCAres[j,0,:,:]:
-       plt.subplot(k)
+       #plt.subplot(k)
        plt.scatter(i[0],i[1])
    k=k+1
 plt.show()

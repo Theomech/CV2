@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def pca(X, nb_components=0):
     [n, d] = X.shape
     if (nb_components <= 0) or (nb_components>n):
@@ -23,3 +24,16 @@ def pca(X, nb_components=0):
         eigenvectors[:, i] = eigenvectors[:, i] / np.linalg.norm(eigenvectors[:, i])
 
     return (eigenvalues, eigenvectors, mu)
+
+def project(W, X, mu):
+    '''
+    Project X on the space spanned by the vectors in W.
+    mu is the average image
+    '''
+    return np.dot(X-mu,W)
+
+def reconstruct(W, Y, mu):
+    '''
+    Reconstruct an image based on its PCA-coefficients Y, the eigenvectors W and the average mu.
+    '''
+    return np.dot(W,Y) + mu

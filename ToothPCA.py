@@ -19,4 +19,4 @@ def ToothPCA(ProcOriginal,ProcOriginalMir):
         PCAres.append(pcakept)
 
     PCAres = np.reshape(PCAres, (8, 4, 40, 2))
-    return PCAres
+    return PCAres, eigval, eigvec, mu
