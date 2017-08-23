@@ -10,47 +10,7 @@ import matplotlib.pyplot as plt
 
 
 def procrustes(X, Y, scaling=True, reflection='best'):
-    """
-    A port of MATLAB's `procrustes` function to Numpy.
 
-    Procrustes analysis determines a linear transformation (translation,
-    reflection, orthogonal rotation and scaling) of the points in Y to best
-    conform them to the points in matrix X, using the sum of squared errors
-    as the goodness of fit criterion.
-
-        d, Z, [tform] = procrustes(X, Y)
-
-    Inputs:
-    ------------
-    X, Y
-        matrices of target and input coordinates. they must have equal
-        numbers of  points (rows), but Y may have fewer dimensions
-        (columns) than X.
-
-    scaling
-        if False, the scaling component of the transformation is forced
-        to 1
-
-    reflection
-        if 'best' (default), the transformation solution may or may not
-        include a reflection component, depending on which fits the data
-        best. setting reflection to True or False forces a solution with
-        reflection or no reflection respectively.
-
-    Outputs
-    ------------
-    d
-        the residual sum of squared errors, normalized according to a
-        measure of the scale of X, ((X - X.mean(0))**2).sum()
-
-    Z
-        the matrix of transformed Y-values
-
-    tform
-        a dict specifying the rotation, translation and scaling that
-        maps X --> Y
-
-    """
 
     n, m = X.shape
     ny, my = Y.shape
@@ -125,10 +85,10 @@ def procloop(firstElem1, ProcArray):
     ProcOriginal = np.zeros((14,8,40,2))
 
     for j in range(14):
-        for i in range(8):
-            Y = ProcArray[j, i, :, :]
-            [_, Z, _] = procrustes(firstElem1, Y, scaling=True, reflection='best')
-            ProcOriginal[j, i, :, :] = Z
+        #for i in range(8):
+        Y = ProcArray[j, :, :, :]
+        [_, Z, _] = procrustes(firstElem1, Y, scaling=True, reflection='best')
+        ProcOriginal[j, :, :, :] = Z
 
 
     ProcMean = np.mean(ProcOriginal, axis=0,)
@@ -159,14 +119,15 @@ def normc(X):
     X = X.dot(1. / scale_factor)
     return X
 
-
+#swsto pca gia tin 8ada dontiwn
+#prokrousti gia tin 8ada dontiwn
 
 """Import Data
 """
 landmarksOriginal, landmarksMirrored = landmarks()
 
-firstElem1 = landmarksOriginal[0,0,:,:]
-firstmirror = landmarksMirrored[0,0,:,:]
+firstElem1 = landmarksOriginal[0,:,:,:]
+firstmirror = landmarksMirrored[0,:,:,:]
 '''Applying Procrustes
 First go of Procrustes'''
 [ProcMean, ProcOriginal] = procloop(firstElem1, landmarksOriginal)

@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import os, sys
-from scipy.ndimage import morphology
+#from scipy.ndimage import morphology
 
 dirAllRadio = sys.path[0] + '/_Data/Radiographs/extra'
 
@@ -17,6 +17,7 @@ def load(folder):
 
 def resizeRadio(image):
     return cv2.resize(image, (1920, 1080))
+
 
 '''
 def pseudoBinarize(image):
@@ -37,6 +38,7 @@ def auto_canny(image, sigma=0.33):
     # return the edged image
     return edged
 
+
 def clahe(img):
     """Creates a CLAHE object and applies it to the given image.
 
@@ -49,6 +51,7 @@ def clahe(img):
     """
     clahe_obj = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
     return clahe_obj.apply(img)
+
 
 def print_image(image, name):
     cv2.namedWindow(name, cv2.WINDOW_NORMAL)
@@ -64,38 +67,40 @@ def sobel(image):
 
 
 def preprocess(image):
-
-    #image = image[300:880,660:1260]
+    # image = image[300:880,660:1260]
     image = cv2.bilateralFilter(image, 9, 175, 175)
     image = clahe(image)
-    #mean = np.mean(image)
-    #imageind = np.where(image < 50)
-    #image[imageind] = 0
-    #image = cv2.subtract(image, cv2.Laplacian(image,0))
-    #image2 = 0.5*cv2.bilateralFilter(image, 9, 175, 175)
+    # mean = np.mean(image)
+    # imageind = np.where(image < 50)
+    # image[imageind] = 0
+    # image = cv2.subtract(image, cv2.Laplacian(image,0))
+    # image2 = 0.5*cv2.bilateralFilter(image, 9, 175, 175)
 
-    #image = cv2.subtract(image,image2.astype(np.uint8))
-    #image = cv2.bilateralFilter(image, 5, 275, 275)
+    # image = cv2.subtract(image,image2.astype(np.uint8))
+    # image = cv2.bilateralFilter(image, 5, 275, 275)
     kernel = np.ones((400, 400))
     kernel2 = np.ones((100, 100))
-    tophat = cv2.morphologyEx(image, cv2.MORPH_TOPHAT,kernel)
-    blackhat = cv2.morphologyEx(image, cv2.MORPH_BLACKHAT,kernel2)
-    image = cv2.add(image,tophat)
+    tophat = cv2.morphologyEx(image, cv2.MORPH_TOPHAT, kernel)
+    blackhat = cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, kernel2)
+    image = cv2.add(image, tophat)
     image = cv2.subtract(image, blackhat)
+    # sobel(image)
+    # image = clahe(image)
+    # image = auto_canny(image)
 
-    #image = clahe(image)
-    #image = auto_canny(image)
-
-    #image = sobel(image)
+    # image = sobel(image)
     return image
 
 
+image = load(dirAllRadio).__getitem__(5)
+print(image.shape)
+# print_image(image, 'Original radiograph')
 image = load(dirAllRadio).__getitem__(3)
-#print(image.shape)
-#print_image(image, 'Original radiograph')
+# print(image.shape)
+# print_image(image, 'Original radiograph')
 image = resizeRadio(image)
-#print(image.shape)
-#print_image(image, "Resized")
+# print(image.shape)
+# print_image(image, "Resized")
 image = preprocess(image)
 print(image.shape)
 print_image(image, 'Preprocessed radiograph')

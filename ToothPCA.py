@@ -2,11 +2,11 @@ import numpy as np
 from pca import pca
 
 
-def ToothPCA(ProcOriginal,ProcOriginalMir):
+def ToothPCA(procOriginal, procOriginalMir):
     PCAres = []
     for i in range(8):
-        X = ProcOriginal[:, i, :, :]
-        Y = ProcOriginalMir[:, 7 - i, :, :]
+        X = procOriginal[:, i, :, :]
+        Y = procOriginalMir[:, 7 - i, :, :]
         X = np.concatenate((X, Y), axis=0)
         X = np.reshape(X, (28, 80))
         eigval, eigvec, mu = pca(X, 4)
