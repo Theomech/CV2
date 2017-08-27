@@ -8,7 +8,6 @@ import numpy.linalg as linalg
 import matplotlib.pyplot as plt
 
 
-
 def procrustes(X, Y, scaling=True, reflection='best'):
 
 

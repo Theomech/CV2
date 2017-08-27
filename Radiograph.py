@@ -65,6 +65,22 @@ def sobel(image):
     sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
     return cv2.addWeighted(cv2.convertScaleAbs(sobelx), .5, cv2.convertScaleAbs(sobely), .5, 0)
 
+def preprocess2(image):
+    # blurs
+    image=cv2.GaussianBlur(image,(7,7),0)
+    #image=cv2.medianBlur(image,5)
+    #image=cv2.bilateralFilter(image,1,50,50)
+
+    image=cv2.equalizeHist(image)
+
+    #edge
+    #image=cv2.Canny(image, 10,60)
+    #image=cv2.Laplacian(image,cv2.CV_64F)
+    image=sobel(image)
+
+    # image=cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, np.ones((300, 300)))
+    # image=cv2.morphologyEx(image, cv2.MORPH_TOPHAT, np.ones((300, 300)))
+    return image
 
 def preprocess(image):
     # image = image[300:880,660:1260]
@@ -92,15 +108,11 @@ def preprocess(image):
     return image
 
 
+# image = load(dirAllRadio).__getitem__(5)
+# print(image.shape)
+# print_image(image, 'Original radiograph')
 image = load(dirAllRadio).__getitem__(5)
-print(image.shape)
-# print_image(image, 'Original radiograph')
-image = load(dirAllRadio).__getitem__(3)
 # print(image.shape)
 # print_image(image, 'Original radiograph')
-image = resizeRadio(image)
-# print(image.shape)
-# print_image(image, "Resized")
-image = preprocess(image)
-print(image.shape)
-print_image(image, 'Preprocessed radiograph')
+#print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
+print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
