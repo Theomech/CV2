@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-def landmarks():
+def loadLandmarks():
     # Specifying directories
     dirAll = sys.path[0] + '/_Data/Landmarks'
     dirOriginal = sys.path[0] + r"/_Data/Landmarks/original"
