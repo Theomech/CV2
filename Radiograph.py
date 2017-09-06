@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os, sys
+from pca import pca
 #from scipy.ndimage import morphology
 
 dirAllRadio = sys.path[0] + '/_Data/Radiographs/extra'
@@ -54,7 +55,7 @@ def clahe(img):
 
 
 def print_image(image, name):
-    cv2.namedWindow(name, cv2.WINDOW_NORMAL)
+    cv2.namedWindow(name, cv2.WND_PROP_FULLSCREEN)
     cv2.imshow(name, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -78,6 +79,8 @@ def preprocess2(image):
     #image=cv2.Laplacian(image,cv2.CV_64F)
     image=sobel(image)
 
+
+
     # image=cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, np.ones((300, 300)))
     # image=cv2.morphologyEx(image, cv2.MORPH_TOPHAT, np.ones((300, 300)))
     return image
@@ -100,11 +103,7 @@ def preprocess(image):
     blackhat = cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, kernel2)
     image = cv2.add(image, tophat)
     image = cv2.subtract(image, blackhat)
-    # sobel(image)
-    # image = clahe(image)
-    # image = auto_canny(image)
-
-    # image = sobel(image)
+    image=sobel(image)
     return image
 
 
@@ -114,5 +113,7 @@ def preprocess(image):
 image = load(dirAllRadio).__getitem__(5)
 # print(image.shape)
 # print_image(image, 'Original radiograph')
-#print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
+print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
 print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
+print_image(pca(preprocess2(resizeRadio(image))),'pca')
+
