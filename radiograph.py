@@ -4,7 +4,10 @@ import os, sys
 from pca import pca
 #from scipy.ndimage import morphology
 
-dirAllRadio = sys.path[0] + '/_Data/Radiographs/extra'
+dirTrainRadios = sys.path[0] + '/_Data/Radiographs/'
+dirTestRadios = sys.path[0] + '/_Data/Radiographs/extra'
+preprocessedTrainRadios=[]
+preprocessedTestRadios=[]
 
 
 def load(folder):
@@ -106,11 +109,18 @@ def preprocess(image):
     image=sobel(image)
     return image
 
+def getPreprocessedTrainingRadios():
+    for image in load(dirTrainRadios):
+        preprocessedTrainRadios.append(preprocess2(resizeRadio(image)))
+    return preprocessedTrainRadios
 
-image = load(dirAllRadio).__getitem__(5)
-print(image.shape)
-print_image(image, 'Original radiograph')
-print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
-print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
+def getPreprocessedTestingRadios():
+    for image in load(dirTestRadios):
+        preprocessedTestRadios.append(preprocess2(resizeRadio(image)))
+    return preprocessedTestRadios
+
+# print_image(image, 'Original radiograph')
+# print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
+# print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
 #print_image(pca(preprocess2(resizeRadio(image))),'pca')
 
