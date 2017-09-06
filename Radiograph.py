@@ -107,13 +107,10 @@ def preprocess(image):
     return image
 
 
-# image = load(dirAllRadio).__getitem__(5)
-# print(image.shape)
-# print_image(image, 'Original radiograph')
 image = load(dirAllRadio).__getitem__(5)
-# print(image.shape)
-# print_image(image, 'Original radiograph')
+print(image.shape)
+print_image(image, 'Original radiograph')
 print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
 print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
-print_image(pca(preprocess2(resizeRadio(image))),'pca')
+#print_image(pca(preprocess2(resizeRadio(image))),'pca')
 
