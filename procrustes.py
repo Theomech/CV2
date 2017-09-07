@@ -54,7 +54,7 @@ def procrustes(X, Y, scaling=True, reflection='best'):
         d = 1 - traceTA ** 2
 
         # transformed coords
-        Z = normX * traceTA * np.dot(Y0, T) + muX
+        Z = normY * traceTA * np.dot(Y0, T) + muY
 
     else:
         b = 1

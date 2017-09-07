@@ -1,32 +1,30 @@
 import cv2
 import cv2.cv as cv
-from landmarks import landmarks
+from landmarks import loadLandmarks
 from ToothPCA import ToothPCA
 import numpy as np
-import fnmatch
 from procrustes import procrustes
 import numpy.linalg as linalg
 import matplotlib.pyplot as plt
+import pca
 
+def procloop(firstElem1, L):
+    Procresult = np.zeros(L.shape)
+    shape = L.shape
+    for j in range(shape[0]):
+        for i in range(shape[1]):
+            Y = L[j, :]
+            [d, Z, tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
+            Procresult[j, :, :] = Z
+    ProcMean = np.mean(Procresult, axis=0)
 
+    return ProcMean, Procresult
 
-def procloop(firstElem1, ProcArray):
-    ProcOriginal = np.zeros((14, 8, 80))
-
-    for j in range(14):
-        #for i in range(8):
-        Y = ProcArray[j, :, :]
-        [_, Z, _] = procrustes(firstElem1, Y, scaling=True, reflection='best')
-        ProcOriginal[j, :, :] = Z
-
-
-    ProcMean = np.mean(ProcOriginal, axis=0,)
-
-    return ProcMean, ProcOriginal
 
 def normalize(X):
     X = X.astype(float) / linalg.norm(X).astype(float)
     return X
+
 
 def normb(X):
     centroid = np.mean(X)
@@ -34,11 +32,13 @@ def normb(X):
     X = X.dot(1. / scale_factor)
     return X
 
+
 def as_vectors(X):
     mpla = []
     for i in X:
         mpla.append(i.as_vector())
     return np.array(mpla)
+
 
 def normc(X):
     min = np.amin(X)
@@ -48,69 +48,102 @@ def normc(X):
     X = X.dot(1. / scale_factor)
     return X
 
-#swsto pca gia tin 8ada dontiwn
-#prokrousti gia tin 8ada dontiwn
 
 """Import Data
 """
-landmarksOriginal, landmarksMirrored = landmarks()
 
-#firstElem1 = landmarksOriginal[0,:,:]
-##firstElem1 = np.reshape(firstElem1, (8,80))
-##landmarksOriginal = np.reshape(landmarksOriginal,(14,8,80))
-##firstmirror = landmarksMirrored[0,:,:]
-##firstmirror = np.reshape(firstmirror, (8,80))
+landmarks = loadLandmarks()
+#land = np.zeros((28,8,80))
+#shape = landmarks.shape
 #
+#for i in range(shape[0]):
+#    for j in range(shape[1]):
+#        for o in range(shape[2]):
+#            land[i, j, o] = landmarks[i, j, o, 0]
+#            land[i, j, o + shape[2]] = landmarks[i, j, o, 1]
 #
-#'''Applying Procrustes
-#First go of Procrustes'''
-#[ProcMean, ProcOriginal] = procloop(firstElem1, landmarksOriginal)
-##[ProcMeanMir, ProcOriginalMir] = procloop(firstmirror, landmarksMirrored)
-#
-#meanshape = ProcMean
-#
-#
-#
-##ProcOriginal = np.reshape(ProcOriginal, (14,8,40,2))
-##ProcMean = np.reshape(ProcMean,(8,40,2))
-##for j in range(8):
-##    for i in ProcMean[j,:]:
-##       #plt.subplot(k)
-##        plt.scatter(i[0],i[1])
-###k=k+1
-##plt.show()
-#
-#
-#
-##meanshapemir = normc(np.mean(ProcMean, axis=0))
-#'''Looping Procrustes in order to converge more'''
-#
-#for i in range(50):
-#    [ProcMean, ProcOriginal] = procloop(meanshape, ProcOriginal)
-#    #[ProcMeanMir, ProcOriginalMir] = procloop(meanshapemir, ProcOriginalMir)
-#    meanshape = ProcMean
-#
-#plt.figure(1)
+landmarks = np.reshape(landmarks,(28,8,80))
+# landmarksOriginal = np.reshape(landmarksOriginal,(28,8,40,2))
+firstElem1 = np.mean(landmarks, axis=0)
 
 
+
+
+'''Applying Procrustes
+First go of Procrustes'''
+[ProcMean, Procresult] = procloop(firstElem1, landmarks)
+
+meanshape = normb(ProcMean)
+
+#Procresult = np.reshape(Procresult, (28, 8, 40, 2))
+#ProcMean = np.reshape(ProcMean, (8, 40, 2))
+#landmarks = np.reshape(landmarks,(28,8,40,2))
+#k=331
+#for o in range(9):
+#    plt.subplot(k)
+#    for j in range(8):
+#
+#        for i in landmarks[o, j, :]:
+#
+#            plt.scatter(i[0], i[1])
+#
+#    k=k+1
+#plt.show()
+
+
+
+# meanshapemir = normc(np.mean(ProcMean, axis=0))
+'''Looping Procrustes in order to converge more'''
+
+for i in range(20):
+    [ProcMean, Procresult] = procloop(meanshape, Procresult)
+    meanshape = ProcMean
+
+Procresult = np.reshape(Procresult, (28, 8, 40, 2))
+ProcMean = np.reshape(ProcMean, (8, 40, 2))
+
+#ProcMean Plotter  1 octuple
+for j in range(8):
+
+    for i in ProcMean[j, :]:
+
+        plt.scatter(i[0], i[1])
+
+    #k=k+1
+plt.show()
+
+#9 octuples of teeth Plotter
+#k=331
+#for o in range(9):
+#    plt.subplot(k)
+#    for j in range(8):
+#
+#        for i in Procresult[o, j, :]:
+#            plt.scatter(i[0], i[1])
+#
+#    k=k+1
+#plt.show()
+
+
+plt.figure(1)
 
 '''Applying PCA'''
 
-landmarksOriginal = np.reshape(landmarksOriginal,(14,640))
-#landmarksOriginal = np.swapaxes(landmarksOriginal,0,1)
-PCAres = ToothPCA(landmarksOriginal)
+landmarks = np.reshape(landmarks, (28, 640))
+landmarks = landmarks.T
+eigval, eigvec, mu = pca.pca(landmarks,6)
+explained = np.cumsum(eigval/np.sum(eigval))
+print(explained)
 
-
-
-k=331
-ProcMean = np.reshape(ProcMean,(8,40,2))
-ProcOriginal = np.reshape(ProcOriginal, (14,8,40,2))
-landmarksOriginal = np.reshape(landmarksOriginal, (14,8,40,2))
-for j in range(2):
-    for i in ProcOriginal[0,j,:]:
-       #plt.subplot(k)
-        plt.scatter(i[0],i[1])
-#k=k+1
+k = 331
+ProcMean = np.reshape(ProcMean, (8, 40, 2))
+Procresult = np.reshape(Procresult, (28, 8, 40, 2))
+landmarks = np.reshape(landmarks, (28, 8, 40, 2))
+for j in range(8):
+    for i in Procresult[0, j, :]:
+        # plt.subplot(k)
+        plt.scatter(i[0], i[1])
+# k=k+1
 plt.show()
-sadas
 
+print("str")

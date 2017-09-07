@@ -29,5 +29,3 @@ def loadLandmarks():
 
     textFile.close()
     return landmarks
-
-print (landmarks())
