@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def procrustes(X, Y, scaling=True, reflection='best'):
+def procrustes(X, Y):
 
     n, m = X.shape
     ny, my = Y.shape
@@ -32,34 +32,16 @@ def procrustes(X, Y, scaling=True, reflection='best'):
     V = Vt.T
     T = np.dot(V, U.T)
 
-    if reflection is not 'best':
-
-        # does the current solution use a reflection?
-        have_reflection = np.linalg.det(T) < 0
-
-        # if that's not what was specified, force another reflection
-        if reflection != have_reflection:
-            V[:, -1] *= -1
-            s[-1] *= -1
-            T = np.dot(V, U.T)
-
     traceTA = s.sum()
 
-    if scaling:
+    # optimum scaling of Y
+    b = traceTA * normX / normY
 
-        # optimum scaling of Y
-        b = traceTA * normX / normY
+    # standarised distance between X and b*Y*T + c
+    d = 1 - traceTA ** 2
 
-        # standarised distance between X and b*Y*T + c
-        d = 1 - traceTA ** 2
-
-        # transformed coords
-        Z = normY * traceTA * np.dot(Y0, T) + muY
-
-    else:
-        b = 1
-        d = 1 + ssY / ssX - 2 * traceTA * normY / normX
-        Z = normY * np.dot(Y0, T) + muX
+    # transformed coords
+    Z = normX * traceTA * np.dot(Y0, T) + muX
 
     # transformation matrix
     if my < m:

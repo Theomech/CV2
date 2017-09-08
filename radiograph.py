@@ -1,8 +1,6 @@
 import numpy as np
 import cv2
 import os, sys
-from pca import pca
-#from scipy.ndimage import morphology
 
 dirTrainRadios = sys.path[0] + '/_Data/Radiographs/'
 dirTestRadios = sys.path[0] + '/_Data/Radiographs/extra'

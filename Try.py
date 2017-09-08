@@ -1,12 +1,11 @@
-import cv2
-import cv2.cv as cv
-from landmarks import loadLandmarks
-from ToothPCA import ToothPCA
-import numpy as np
-from procrustes import procrustes
-import numpy.linalg as linalg
 import matplotlib.pyplot as plt
-import pca
+import numpy as np
+import numpy.linalg as linalg
+
+from landmarks import loadLandmarks
+from pca import pca
+from procrustes import procrustes
+
 
 def procloop(firstElem1, L):
     Procresult = np.zeros(L.shape)
@@ -14,7 +13,7 @@ def procloop(firstElem1, L):
     for j in range(shape[0]):
         for i in range(shape[1]):
             Y = L[j, :]
-            [d, Z, tform] = procrustes(firstElem1, Y, scaling=True, reflection='best')
+            [d, Z, tform] = procrustes(firstElem1, Y)
             Procresult[j, :, :] = Z
     ProcMean = np.mean(Procresult, axis=0)
 
@@ -73,7 +72,7 @@ firstElem1 = np.mean(landmarks, axis=0)
 First go of Procrustes'''
 [ProcMean, Procresult] = procloop(firstElem1, landmarks)
 
-meanshape = normb(ProcMean)
+meanshape = ProcMean
 
 #Procresult = np.reshape(Procresult, (28, 8, 40, 2))
 #ProcMean = np.reshape(ProcMean, (8, 40, 2))
@@ -103,14 +102,13 @@ Procresult = np.reshape(Procresult, (28, 8, 40, 2))
 ProcMean = np.reshape(ProcMean, (8, 40, 2))
 
 #ProcMean Plotter  1 octuple
-for j in range(8):
-
-    for i in ProcMean[j, :]:
-
-        plt.scatter(i[0], i[1])
-
-    #k=k+1
-plt.show()
+#for j in range(8):
+#    for i in ProcMean[j, :]:
+#
+#        plt.scatter(i[0], i[1])
+#
+#    #k=k+1
+#plt.show()
 
 #9 octuples of teeth Plotter
 #k=331
@@ -125,22 +123,22 @@ plt.show()
 #plt.show()
 
 
-plt.figure(1)
-
 '''Applying PCA'''
 
-landmarks = np.reshape(landmarks, (28, 640))
-landmarks = landmarks.T
-eigval, eigvec, mu = pca.pca(landmarks,6)
-explained = np.cumsum(eigval/np.sum(eigval))
-print(explained)
+eigval, eigvec, mu = pca(np.reshape(landmarks, (28, 640)), nb_components=6)
+#explained = np.cumsum(eigval/np.sum(eigval))
+#print(explained)
+#Ya = project(eigvec, landmarks[0,:], mu)
+#Xa= reconstruct(eigvec, Ya, mu)
+#k = 331
+#ProcMean = np.reshape(ProcMean, (8, 40, 2))
+#Procresult = np.reshape(Procresult, (28, 8, 40, 2))
 
-k = 331
-ProcMean = np.reshape(ProcMean, (8, 40, 2))
-Procresult = np.reshape(Procresult, (28, 8, 40, 2))
+landmarks = np.reshape(landmarks, (28, 8, 80))
 landmarks = np.reshape(landmarks, (28, 8, 40, 2))
-for j in range(8):
-    for i in Procresult[0, j, :]:
+
+for o in range(8):
+    for i in landmarks[0, o, :]:
         # plt.subplot(k)
         plt.scatter(i[0], i[1])
 # k=k+1
