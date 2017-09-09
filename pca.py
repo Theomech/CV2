@@ -1,10 +1,8 @@
 import numpy as np
 
 
-def pca(X, nb_components=0):
+def pca(X):
     [n, d] = X.shape
-    if (nb_components <= 0) or (nb_components>n):
-        nb_components = n
     mu = X.mean(axis=0)
     for i in range(n):
         X[i, :] -= mu
@@ -16,6 +14,12 @@ def pca(X, nb_components=0):
 
     indx = np.argsort(eigenvalues)[::-1]
     eigenvalues = eigenvalues[indx]
+
+    explained = np.cumsum(eigenvalues / np.sum(eigenvalues))
+    nb_components = 1
+    while explained[nb_components - 1] < 0.95 :
+        nb_components = nb_components + 1
+
     eigenvectors = eigenvectors[:,indx][:,0:nb_components]
 
     eigenvectors = np.dot(X.T, eigenvectors)
@@ -23,7 +27,9 @@ def pca(X, nb_components=0):
     for i in range(nb_components):
         eigenvectors[:, i] = eigenvectors[:, i] / np.linalg.norm(eigenvectors[:, i])
 
-    return (eigenvalues, eigenvectors, mu)
+
+
+    return eigenvalues, eigenvectors, mu
 
 def project(W, X, mu):
     '''
