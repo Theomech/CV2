@@ -2,7 +2,6 @@ import numpy as np
 
 
 def procrustes(X, Y):
-
     n, m = X.shape
     ny, my = Y.shape
 
