@@ -2,6 +2,9 @@ import landmarks
 import pca
 import procrustes
 import radiograph
+import plotter
+import matplotlib.pyplot as plt
+import asm
 
 # here we call all functions
 
@@ -14,8 +17,9 @@ Z, ProcMean, ProcMeanNormal = procrustes.proc(landmarks)
 # 1.3. Analyze the data using a Principal Component Analysis (PCA), exposing shape class variations
 ASMeigenval, ASMeigenvec, ASMmu = pca.pcaLand(Z)
 
-# 1.4. Analyze the obtained principal components
-
 # 2. Pre-process the dental radiographs
-preprocessedRadios = radiograph.getPreprocessedRadios()
+preprocessedRadios = radiograph.getPreprocessedTrainingRadios()
 
+# Initial fitting
+plt.imshow(preprocessedRadios[0, :])
+plotter.plotmean(asm.initialfit(ProcMean))

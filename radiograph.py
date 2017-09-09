@@ -3,6 +3,7 @@ import sys
 
 import cv2
 import numpy as np
+import plotter
 
 dirTrainRadios = sys.path[0] + '/_Data/Radiographs/'
 dirTestRadios = sys.path[0] + '/_Data/Radiographs/extra'
@@ -85,7 +86,7 @@ def preprocess(image):
 
 def getPreprocessedTrainingRadios():
     for image in load(dirTrainRadios):
-        preprocessedTrainRadios.append(preprocess(image))
+        preprocessedTrainRadios.append(preprocess2(image))
     return preprocessedTrainRadios
 
 def getPreprocessedTestingRadios():
@@ -95,4 +96,4 @@ def getPreprocessedTestingRadios():
 
 # plotter.print_image(image, 'Original radiograph')
 # plotter.print_image(preprocess(image), 'Preprocessed radiograph')
-# plotter.print_image(resizeRadio(getPreprocessedTrainingRadios().__getitem__(1)), 'Preprocessed radiograph Str')
+#plotter.print_image(resizeRadio(getPreprocessedTrainingRadios().__getitem__(1)), 'Preprocessed radiograph Str')
