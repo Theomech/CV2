@@ -2,7 +2,6 @@ import numpy as np
 
 
 def procrustes(X, Y):
-
     n, m = X.shape
     ny, my = Y.shape
 
@@ -52,3 +51,31 @@ def procrustes(X, Y):
     tform = {'rotation': T, 'scale': b, 'translation': c}
 
     return d, Z, tform
+
+
+def procloop(firstElem1, L):
+    Procresult = np.zeros(L.shape)
+    shape = L.shape
+    for j in range(shape[0]):
+        for i in range(shape[1]):
+            Y = L[j, :]
+            [d, Z, tform] = procrustes(firstElem1, Y)
+            Procresult[j, :, :] = Z
+    ProcMean = np.mean(Procresult, axis=0)
+
+    # Procresult = np.reshape(Procresult, (28, 8, 40, 2))
+    # ProcMean = np.reshape(ProcMean, (320, 2))
+
+    return ProcMean, Procresult
+
+def proc(landmarks):
+    lands = np.zeros((28, 320, 2))
+    for i in range(28):
+        lands[i, :] = landmarks[i, :] - landmarks[i, :].mean(0)
+    firstElem = lands[0, :]
+    ProcMean, Z = procloop.procloop(firstElem, lands)
+    meanshape = ProcMean
+    for i in range(20):
+        [ProcMean, Z] = procloop.procloop(meanshape, Z)
+        meanshape = ProcMean
+    return Z

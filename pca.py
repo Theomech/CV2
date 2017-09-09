@@ -37,3 +37,15 @@ def reconstruct(W, Y, mu):
     Reconstruct an image based on its PCA-coefficients Y, the eigenvectors W and the average mu.
     '''
     return np.dot(W,Y) + mu
+
+def pcaLand(Z):
+    Z = np.reshape(Z, (28, 640))
+    ASMeigenval, ASMeigenvec, ASMmu = pca(Z)
+    return ASMeigenval,ASMeigenvec,ASMmu
+
+def pcaRadio(preprocessedRadios):
+    radios = np.zeros((14, 2073600))
+    for i in range(14):
+        radios[i, :] = np.reshape(preprocessedRadios[i, :], 2073600)
+    Radioeigenval, Radioeigenvec, Radiomu = pca(radios, nb_components=5)
+    return Radioeigenval,Radioeigenvec,Radiomu

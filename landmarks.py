@@ -25,7 +25,7 @@ def loadLandmarks():
 
     '''Transforming the initial list for Original elements to array and then reshaping'''
     landmarks = np.asarray(landmarks)
-    landmarks = np.reshape(landmarks, (28, 8, 40, 2)).astype(float)
+    landmarks = np.reshape(landmarks, (28, 320, 2)).astype(float)
 
     textFile.close()
     return landmarks

@@ -1,6 +1,6 @@
 import numpy as np
 import landmarks
-import math,plotter
+import math, plotter
 
 
 def procrustes(landmarks):
@@ -13,7 +13,7 @@ def procrustes(landmarks):
     scaledReshaped = scaledTranslated.reshape(28, 320, 2)
     firstOct = scaledReshaped[0, :, :]
     normalized = []
-    for i in range(1, 27):
+    for i in range(0, 27):
         currentOct = scaledReshaped[i, :, :]
         num = (currentOct[:, 0] * firstOct[:, 1] - currentOct[:, 1] * firstOct[:, 0]).sum()
         denom = (currentOct[:, 0] * firstOct[:, 0] + currentOct[:, 1] * firstOct[:, 1]).sum()
@@ -29,4 +29,4 @@ def procrustes(landmarks):
     return normalized
 
 
-plotter.plot(procrustes(landmarks.loadLandmarks()))
+plotter.plotall(procrustes(landmarks.loadLandmarks()))

@@ -18,39 +18,20 @@ def load(folder):
 
 
 def resizeRadio(image):
-    return cv2.resize(image, (1920, 1080))
-
-
-'''
-def pseudoBinarize(image):
-    image[i<120] = 0
-    return image
-'''
+    return cv2.resize(image, (640, 480))
 
 
 def auto_canny(image, sigma=0.33):
-    # compute the median of the single channel pixel intensities
     v = np.median(image)
 
-    # apply automatic Canny edge detection using the computed median
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
     edged = cv2.Canny(image, lower, upper)
 
-    # return the edged image
     return edged
 
 
 def clahe(img):
-    """Creates a CLAHE object and applies it to the given image.
-
-    Args:
-        img: A grayscale dental x-ray image.
-
-    Returns:
-        The result of applying CLAHE to the given image.
-
-    """
     clahe_obj = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
     return clahe_obj.apply(img)
 
@@ -109,16 +90,10 @@ def preprocess(image):
 
 def getPreprocessedTrainingRadios():
     for image in load(dirTrainRadios):
-        preprocessedTrainRadios.append(preprocess2(resizeRadio(image)))
+        preprocessedTrainRadios.append(preprocess2(image))
     return preprocessedTrainRadios
 
 def getPreprocessedTestingRadios():
     for image in load(dirTestRadios):
-        preprocessedTestRadios.append(preprocess2(resizeRadio(image)))
+        preprocessedTestRadios.append(preprocess2(image))
     return preprocessedTestRadios
-
-# print_image(image, 'Original radiograph')
-# print_image(preprocess(resizeRadio(image)), 'Preprocessed radiograph')
-# print_image(preprocess2(resizeRadio(image)), 'Preprocessed radiograph Str')
-#print_image(pca(preprocess2(resizeRadio(image))),'pca')
-
