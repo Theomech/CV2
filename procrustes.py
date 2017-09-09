@@ -73,9 +73,10 @@ def proc(landmarks):
     for i in range(28):
         lands[i, :] = landmarks[i, :] - landmarks[i, :].mean(0)
     firstElem = lands[0, :]
-    ProcMean, Z = procloop.procloop(firstElem, lands)
+    ProcMean, Z = procloop(firstElem, lands)
     meanshape = ProcMean
     for i in range(20):
-        [ProcMean, Z] = procloop.procloop(meanshape, Z)
+        [ProcMean, Z] = procloop(meanshape, Z)
         meanshape = ProcMean
-    return Z
+    ProcMeanNormal = ProcMean / np.amax(ProcMean)
+    return Z, ProcMean, ProcMeanNormal

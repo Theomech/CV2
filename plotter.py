@@ -1,3 +1,4 @@
+import cv2
 import matplotlib.pyplot as plt
 
 #Plotting 1 set of Teeth
@@ -38,3 +39,10 @@ def plotall(array):
         for i in array[j, :]:
             plt.scatter(i[0], i[1])
     plt.show()
+
+
+def print_image(image, name):
+    cv2.namedWindow(name, cv2.WND_PROP_FULLSCREEN)
+    cv2.imshow(name, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

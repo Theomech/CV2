@@ -1,6 +1,8 @@
-import numpy as np
+import os
+import sys
+
 import cv2
-import os, sys
+import numpy as np
 
 dirTrainRadios = sys.path[0] + '/_Data/Radiographs/'
 dirTestRadios = sys.path[0] + '/_Data/Radiographs/extra'
@@ -18,7 +20,7 @@ def load(folder):
 
 
 def resizeRadio(image):
-    return cv2.resize(image, (640, 480))
+    return cv2.resize(image, (1920, 1080))
 
 
 def auto_canny(image, sigma=0.33):
@@ -34,13 +36,6 @@ def auto_canny(image, sigma=0.33):
 def clahe(img):
     clahe_obj = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
     return clahe_obj.apply(img)
-
-
-def print_image(image, name):
-    cv2.namedWindow(name, cv2.WND_PROP_FULLSCREEN)
-    cv2.imshow(name, image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 
 def sobel(image):
@@ -90,10 +85,14 @@ def preprocess(image):
 
 def getPreprocessedTrainingRadios():
     for image in load(dirTrainRadios):
-        preprocessedTrainRadios.append(preprocess2(image))
+        preprocessedTrainRadios.append(preprocess(image))
     return preprocessedTrainRadios
 
 def getPreprocessedTestingRadios():
     for image in load(dirTestRadios):
         preprocessedTestRadios.append(preprocess2(image))
     return preprocessedTestRadios
+
+# plotter.print_image(image, 'Original radiograph')
+# plotter.print_image(preprocess(image), 'Preprocessed radiograph')
+# plotter.print_image(resizeRadio(getPreprocessedTrainingRadios().__getitem__(1)), 'Preprocessed radiograph Str')
